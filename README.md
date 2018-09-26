@@ -59,9 +59,9 @@ I also didn't realize that AWS free tier is limited by default to one instance u
 
 I found it strange that the resource monitoring for my instance didn't reflect the load I was generating on the box, either due to the nature of the resource usage or how the monitoring is done. 
 
-There are a number of things I might've done differently if I'd had more time, among them:
+There are a number of things I might've done differently if I'd had more time:
 
-tighter access control
-a better app build process with versioning
-containers for aws cli and terraform
-further investigation into ECS
+tighter access control  
+a better app build process with versioning  
+containers for aws cli and terraform  
+further investigation into ECS  
