@@ -63,6 +63,6 @@ There are a number of things I might've done differently if I'd had more time:
 
 tighter access control  
 a better app build process with versioning  
-containers for aws cli and terraform
-proper load balancing
+containers for aws cli and terraform  
+proper load balancing  
 further investigation into ECS  
