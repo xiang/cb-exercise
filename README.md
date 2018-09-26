@@ -10,23 +10,27 @@ a simple HTTP API, built in Go, that returns a JSON string containing the curren
 
   install terraform: https://www.terraform.io/intro/getting-started/install.html
   set AWS creds as env vars
-  
-  ```export AWS_ACCESS_KEY_ID="<key_id>"
-  export AWS_SECRET_ACCESS_KEY="<access_key>"
-  export AWS_DEFAULT_REGION="us-east-2"```
-  
+
+```
+export AWS_ACCESS_KEY_ID="<key_id>"
+export AWS_SECRET_ACCESS_KEY="<access_key>"
+export AWS_DEFAULT_REGION="us-east-2"
+```
+
   clone this repo
   
-  ```git clone https://github.com/xiang/cb-exercise.git```
+`git clone https://github.com/xiang/cb-exercise.git`
   
 2. Build infrastructure
 
-  ```cd terraform
-  terraform apply```
+```
+cd terraform
+terraform apply
+```
 
 3. Access endpoint
 
-  `curl <instance IP>:8080`
+`curl <instance IP>:8080`
 
 # What I did:
 
@@ -57,4 +61,3 @@ tighter access control
 a better app build process with versioning
 containers for aws cli and terraform
 further investigation into ECS
-I 
