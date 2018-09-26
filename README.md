@@ -44,24 +44,25 @@ Once I had working code, I had to decide how to deploy it. The two most obvious 
 
 I'm fond of the Hashicorp suite and Terraform was the first choice for infrastructure. The provisioning for the OS in this case is as simple as installing Docker and the container, so a config management tool seemed unnecessary. I first explored Packer, though I was disappointed to find that the configs are still JSON and the process is probably too complicated for my needs; these tasks could easily be run as a script via Terraform or cloud-init. I do think the automated image approach is appealing for simpler environments, and it's something I would like to explore further.
 
-I thought it would be trivial to push the app container to a docker registry and pull it remotely, but the authentication process requires the AWS CLI. I tried a public Docker Hub repo but that still requires auth and I didn't want to muck with management of secrets, so I opted to just clone the repo on the instance and build and run the binary on bootstrap. This is not optimal but there's no sensitive information in the repo and it's a much easier solution - in order to use the ECR, you would have to build the repo before the autoscale group, or build the group without instances, then update once the repo is available. Deploying the code directly does away with this step.
+I thought it would be trivial to push the app container to a docker registry and pull it remotely, but the authentication process requires the AWS CLI. I tried a public Docker Hub repo but that still requires auth and I didn't want to muck with management of secrets, so I opted to just clone the repo and build the app as part of the cloud-init script. This is not optimal but there's no sensitive information in the repo and it's a much easier solution - in order to use the ECR, you would have to build the repo before the autoscale group, or build the group without instances, then update once the repo is available. Deploying the code directly does away with this step.
 
-After some trial and error with the cloud-init script, I was able to get a fresh instance running the container on boot, but I wasn't able to trigger autoscaling reliably. Every time the endpoint is hit, the app will fire a goroutine that consumes some CPU. The idea was that accessing it repeatedly in a short period of time would stress the system enough to force scaling activity, but the usage has to be sustained over time, and I had difficulty accomplishing this even with stress testing tools. My account is also limited to one VM at the moment so the attempts to scale will only fail.
+After some trial and error with the cloud-init script, I was able to get a fresh instance running the container on boot, but I wasn't able to trigger autoscaling reliably. Every time the endpoint is hit, the app will fire a goroutine that consumes some CPU. The idea was that accessing it repeatedly in a short period of time would stress the system enough to force scaling activity, but the usage has to be sustained over time for the monitoring to pick it up, and I had difficulty accomplishing this even with stress testing tools. My account is also limited to one VM at the moment so the attempts to scale will only fail.
 
 
 # Takeaways:
 
-Always look at the bigger picture. If I had researched the autoscaling options more thoroughly before working on the app code, I probably wouldn't have spent so much time trying to figure out how to write an intentionally resource hungry app, but it was nonetheless an interesting exercise in OS interaction. I could've just as soon demonstrated the autoscaling behavior by manually running a stress testing tool on a box, which is what I ended up doing for testing anyway. 
+Always look at the bigger picture. If I had researched the autoscaling options more thoroughly before working on the app code, I probably wouldn't have spent so much time trying to figure out how to write an intentionally resource hungry app, but it was nonetheless an interesting exercise in OS interaction. I could've just as soon demonstrated the autoscaling behavior by manually running a stress test on the box, which is what I ended up doing for testing anyway. 
 
-I found that using an autoscaling group with a launch template dispenses the need for an aws_instance resource, which I had already written.
+I found that using an autoscaling group with a launch template dispenses the need for an aws_instance resource, which I had already written. I now have a better understanding of both these resources, but there's still a lot I haven't touched - AWS has evolved quite a bit since I was using it regularly.
 
-I also didn't realize that AWS free tier is limited by default to one instance until I tested autoscaling.
+I didn't realize that AWS free tier is limited by default to one instance until I tested autoscaling.
 
-I found it strange that the resource monitoring for my instance didn't reflect the load I was generating on the box, either due to the nature of the resource usage or how the monitoring is done. 
+I found it strange that the resource monitoring for my instance didn't reflect the load I was generating on the box, either due to the nature of the stress test or how the monitoring is done.
 
 There are a number of things I might've done differently if I'd had more time:
 
 tighter access control  
 a better app build process with versioning  
-containers for aws cli and terraform  
+containers for aws cli and terraform
+proper load balancing
 further investigation into ECS  
